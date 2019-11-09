@@ -1,4 +1,4 @@
-import tkinter as tk
+import tkinter as tk # Python 3.x
 
 import matplotlib.pyplot as plot
 import numpy as np
@@ -11,8 +11,6 @@ from scipy.io import wavfile
 
 
 class MainApplication():
-
-    # self.configure_gui()
 
     def __init__(self, master):
 
