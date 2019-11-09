@@ -30,7 +30,3 @@ def main():
     root = tk.Tk()
     main_app =  MainApplication(root)
     root.mainloop()
-
-
-# if __name__ == '__main__':
-#     main()
