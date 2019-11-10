@@ -6,4 +6,9 @@
 !.vscode/extensions.json
 *.code-workspace
 
-spectograph/__pycache__/
+# Byte-compiled / optimized / DLL files
+*/*/*/__pycache__/
+*/*/__pycache__/
+*/__pycache__/
+*.pyo
+*.pyc
