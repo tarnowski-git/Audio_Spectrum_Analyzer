@@ -1,4 +1,4 @@
-import tkinter as tk # Python 3.x
+import tkinter as tk
 
 import matplotlib.pyplot as plot
 import numpy as np
