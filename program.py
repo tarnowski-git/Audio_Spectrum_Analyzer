@@ -206,7 +206,7 @@ class MainApplication():
         # Fs - częstotliwość fali
         # overlap - liczba punktów pokrywających się między segmentami
         overlap_temp=int(self.overlap_var.get())/100
-        self.spectogram_axes.specgram(signalData, Fs=samplingFrequency, NFFT=int(self.nfft_var.get()), window=signal.get_window(self.window_var.get(),int(self.nfft_var.get())), noverlap=overlap_temp)
+        self.spectogram_axes.specgram(signalData, Fs=samplingFrequency, NFFT=int(self.nfft_var.get()), window=signal.get_window(self.window_var.get(), int(self.nfft_var.get())), noverlap=overlap_temp)
         self.spectogram_canvas.draw()
 
         

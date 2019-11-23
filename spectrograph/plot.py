@@ -8,7 +8,7 @@ class Plot(ABC):
     """
     @abstractmethod
     def plotting(self):
-        """Created a Figure instance and return it."""
+        """Abstract method"""
         return
     
     # @abstractmethod

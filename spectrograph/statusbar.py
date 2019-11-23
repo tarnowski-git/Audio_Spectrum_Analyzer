@@ -1,6 +1,7 @@
 import tkinter as tk
 
-class Statusbar(tk.Frame):
+class Statusbar(tk.Label):
 
-    def __init__(self, parent):
-        pass
+    def __init__(self, parent, *args, **kwargs):
+        tk.Label.__init__(self, parent, *args, **kwargs)
+        
