@@ -1,24 +1,9 @@
 import numpy as np
-from abc import ABC, abstractmethod
 from matplotlib.figure import Figure
 from scipy import signal
 
 
-class Plot(ABC):
-    """Abstract class of all plots. Classes derived from this class cannot
-    then be instantiated unless all abstract methods have been overridden.
-    """
-    @abstractmethod
-    def plotting(self):
-        """Abstract method"""
-        return
-
-    # @abstractmethod
-    # def __generate_plot(self):
-    #     pass
-
-
-class WavePlot(Plot):
+class WavePlot():
 
     def __init__(self):
         self.__xval = np.zeros(1000)
@@ -64,7 +49,7 @@ class SetterProperty(object):
         return self.func(obj, value)
 
 
-class SpectrumPlot(Plot):
+class SpectrumPlot():
     """Compute and plot a spectrogram of data in `xval`.
     Data are split into NFFT length segments and 
     the spectrum of each section is computed.

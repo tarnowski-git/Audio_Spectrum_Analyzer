@@ -9,11 +9,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from spectrograph.plots import WavePlot, SpectrumPlot
 
 
-class Statusbar(tk.Label):
-
-    def __init__(self, parent, *args, **kwargs):
-        tk.Label.__init__(self, parent, *args, **kwargs)
-        
 
 class Menubar(tk.Menu):
     """Create a functional menubar in application."""
@@ -56,12 +51,6 @@ class Menubar(tk.Menu):
 
     def about_versions(self):
         info = ("Python 3.7.2\n")
-            # "Tkinter " + str(tkinter.TkVersion) + "\n"
-            # "ScyPy " + str(scipy.__version__) + "\n"
-            # "NumPy "+ str(np.version.version) + "\n"
-            # "MatPlotLib " + str(matplotlib.__version__) + "\n"
-            # "PyGame " + str(pygame.version.ver) + "\n"
-            # "PILLOW " + str(VERSION) + "\n"
         tk.messagebox.showinfo("System analizy dźwięków z sonogramem", info)
 
     @property
@@ -71,10 +60,16 @@ class Menubar(tk.Menu):
             return self.__filename
         else:
             raise NameError
-        
 
 
-class MainApplication(tk.Tk):
+class Statusbar(tk.Label):
+
+    def __init__(self, parent, *args, **kwargs):
+        tk.Label.__init__(self, parent, *args, **kwargs)
+
+
+
+class Main_Application(tk.Tk):
     """Main class of application"""
 
     WINDOWING = ["hamming", "triang", "blackman", "hann", "bartlett", "flattop", "bohman", "barthann"]
@@ -247,5 +242,5 @@ class MainApplication(tk.Tk):
 
 def main():
     """run mianloop"""
-    root = MainApplication()
+    root = Main_Application()
     root.mainloop()
