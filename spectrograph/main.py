@@ -113,18 +113,14 @@ class Main_Application(tk.Tk):
 
         title_label = tk.Label(self.frame_plot, text="Wykres fali", font=self.LARGE_FONT)
         title_label.pack()
-        self.wave = WavePlot()
-        self.figure_wave = self.wave.plotting()
-        self.canvas_wave = FigureCanvasTkAgg(self.figure_wave, master=self.frame_plot)
-        self.canvas_wave.draw()
+
+        self.canvas_wave = WavePlot(self.frame_plot)
         self.canvas_wave.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=tk.TRUE)
 
         title_label = tk.Label(self.frame_plot, text="Spektogram fali", font=self.LARGE_FONT)
         title_label.pack()
-        self.spectrum = SpectrumPlot()
-        self.figure_spectrum = self.spectrum.plotting()
-        self.canvas_spectrum = FigureCanvasTkAgg(self.figure_spectrum, master=self.frame_plot)
-        self.canvas_spectrum.draw()
+
+        self.canvas_spectrum = SpectrumPlot(self.frame_plot)
         self.canvas_spectrum.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=tk.TRUE)
 
     def add_statusbar(self):
@@ -194,29 +190,12 @@ class Main_Application(tk.Tk):
             signal_duration = len(samples)
             times = np.linspace(0, signal_duration / sample_rate, num=signal_duration)
 
-            # create a wave
-            self.wave.xval = times
-            self.wave.yval = samples
-            # self.figure_wave.clear()
-            # self.figure_test = self.wave.plotting()
-            # print(self.figure_wave is self.figure_test)
-            # self.figure_wave = self.figure_test
-            # print(self.figure_wave is self.figure_test)
-            
-            # self.canvas_wave = FigureCanvasTkAgg(self.figure_wave, master=self.frame_plot)
-            self.canvas_wave.draw()
-            # self.canvas_wave._tkcanvas.pack(side=Tk.TOP, fill=Tk.BOTH, expand=tk.TRUE)
-            # self.canvas_wave.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=tk.TRUE)
-            # self.canvas_wave._tkcanvas.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+            # update a waveform
+            self.canvas_wave.plotting(xval=times, yval=samples)
+
             # # create a spectrum
-            # self.spectrum.xval(samples)
-            # self.spectrum.fs(sample_rate)
-            # self.spectrum.nfft(self.var_nfft.get())
-            # self.spectrum.window(self.var_windowing.get(), self.var_nfft.get())
-            # self.spectrum.noverlap(self.var_overlap.get())
-            # self.figure_spectrum = self.spectrum.plotting()
-            # self.canvas_spectrum.draw()
-            # self.canvas_spectrum.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=tk.TRUE)
+            self.canvas_spectrum.plotting(xval=samples, nfft=self.var_nfft.get(), fs=sample_rate, 
+                                        window=signal.get_window(self.var_windowing.get(), int(self.var_nfft.get())), noverlap=self.var_overlap.get(),time=times)
             
         except TypeError as e:
             print(e)
@@ -228,6 +207,7 @@ class Main_Application(tk.Tk):
         except NameError as E:
             print(E)
             tk.messagebox.showerror("File not found", "Propobly the file path is wrong. Please try again.")
+
 
     def play_sound(self):
         try:

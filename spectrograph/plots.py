@@ -1,41 +1,45 @@
 import numpy as np
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+from matplotlib.pyplot import specgram
 from scipy import signal
 
 
-class WavePlot():
+class WavePlot(FigureCanvasTkAgg):
+    """Compute and plot a waveform of data in `xval`.
 
-    def __init__(self):
-        self.__xval = np.zeros(1000)
-        self.__yval = [0] * 1000
+    Parameters
+    ----------
+    `parent` : master widget
+        Represents a widget to act as the parent of the current object
+    `xval` : 1-D array or sequence
+        The number of data points in timeline.
+    `yval` : 1-D array or sequence
+        Array containing wave samples.
+    """
 
-    def plotting(self):
-        """Created a WavePlot Figure instance and return it."""
+    def __init__(self, parent=None, xval=np.zeros(1000), yval=[0] * 1000):
+        self.__xval = xval
+        self.__yval = yval
         figure = Figure(figsize=(4, 2), dpi=100)    # figsize - in inch
-        axes = figure.add_subplot(111)
-        axes.grid(True)
-        axes.axhline()    # line y=0
-        axes.set_xlim(left=0)
-        axes.plot(self.__xval, self.__yval)
-        return figure
+        super().__init__(figure, master=parent)
+        self.axes = figure.add_subplot(111)
+        self.axes.grid(True)
+        self.axes.axhline()                         # line y=0
+        self.axes.set_xlim(left=0)
+        self.axes.plot(self.__xval, self.__yval)
+        self.draw()
 
-    @property
-    def xval(self):
-        return self.__xval
-
-    @xval.setter
-    def xval(self, val):
-        """OX, time"""
-        self.__xval = val
-
-    @property
-    def yval(self):
-        return self.__yval
-
-    @yval.setter
-    def yval(self, val):
-        """OY, signal data"""
-        self.__yval = val
+    def plotting(self, xval, yval):
+        """Updating a WavePlot Figure instance and drawing plot."""
+        self.__xval = xval
+        self.__yval = yval
+        self.axes.clear()
+        self.axes.grid(True)
+        self.axes.axhline()
+        self.axes.set_xlim(left=0)
+        self.axes.plot(self.__xval, self.__yval)
+        self.draw()
 
 
 class SetterProperty(object):
@@ -49,13 +53,15 @@ class SetterProperty(object):
         return self.func(obj, value)
 
 
-class SpectrumPlot():
+class SpectrumPlot(FigureCanvasTkAgg):
     """Compute and plot a spectrogram of data in `xval`.
     Data are split into NFFT length segments and 
     the spectrum of each section is computed.
 
     Parameters
     ----------
+    `parent` : master widget
+        Represents a widget to act as the parent of the current object
     `xval` : 1-D array or sequence
         Array containing wave samples.
     `nfft` : int
@@ -70,22 +76,39 @@ class SpectrumPlot():
         The number of points of overlap between blocks.
     """
 
-    def __init__(self, xval=[0]*1024):
+    def __init__(self, parent=None, xval=np.zeros(1000), nfft=256, fs=2, noverlap=900):
+
+        # init variables
         self.__xval = xval
         self.__nfft = 256
         self.__fs = 2
-        self.__window = np.hamming(self.__nfft)
+        # self.__window = np.hamming(self.__nfft)
         self.__noverlap = 128
 
-    def plotting(self):
-        """Created a SpectrumPlot Figure instance and return it."""
+        # create a figure
         figure = Figure(figsize=(4, 2), dpi=100)    # figsize - in inch
+        super().__init__(figure, master=parent)
         self.axes = figure.add_subplot(111)
+        self.axes.grid(True)
+        self.axes.specgram(self.__xval, NFFT=self.__nfft,
+                           Fs=self.__fs, noverlap=self.__noverlap)
+        self.draw()
+
+    def plotting(self, xval, nfft, fs, window, noverlap, time):
+        """Updating a SpectrumPlot Figure instance and drawing plot."""
+
+        self.__xval = xval
+        self.__nfft = int(nfft)
+        self.__fs = int(fs)
+        self.__window = window
+        self.__noverlap = int(noverlap) / 100
+        self.__time = len(time)
+
         self.axes.clear()
         self.axes.grid(True)
         self.axes.specgram(self.__xval, NFFT=self.__nfft, Fs=self.__fs,
-                           window=self.__window, noverlap=self.__noverlap)
-        return figure
+                           window=self.__window, noverlap=self.__noverlap, xextent=(0, 1))
+        self.draw()
 
     @SetterProperty
     def xval(self, val):
