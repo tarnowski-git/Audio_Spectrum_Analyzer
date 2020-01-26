@@ -4,7 +4,7 @@ from scipy import signal
 from scipy.io import wavfile
 from pygame import mixer
 from PIL import Image, ImageTk
-
+from os import getcwd, path
 from spectrograph.plots import WavePlot, SpectrumPlot
 
 
@@ -18,12 +18,13 @@ class Menubar(tk.Menu):
         "Author: Konrad Tarnowski © 2020"
     )
 
-    def __init__(self, parent):
+    def __init__(self, parent, statusbar):
         # create a menubar object
         super().__init__(parent)
         self.parent = parent
         self.__filename = None
-
+        # statusbar needed too interactive with menubar
+        self.statusbar = statusbar
         # Build a file options
         fileMenu = tk.Menu(self, tearoff=False)
         self.add_cascade(label="File",underline=0, menu=fileMenu)
@@ -41,7 +42,10 @@ class Menubar(tk.Menu):
         """
         # filter to only one type files
         ftypes = [("wave files","*.wav")]
-        self.__filename = tk.filedialog.askopenfilename(initialdir="/", filetypes=ftypes, title="Open file")
+        # getcwd() takes a current working directory of a process
+        self.__filename = tk.filedialog.askopenfilename(initialdir=getcwd(), filetypes=ftypes, title="Open file")
+        head_tail = path.split(self.__filename)
+        self.statusbar.set_status("Selected File: {}".format(head_tail[1]))
         
     def exit(self):
         """Closing the program"""
@@ -67,8 +71,16 @@ class Menubar(tk.Menu):
 
 class Statusbar(tk.Label):
 
-    def __init__(self, parent, *args, **kwargs):
-        tk.Label.__init__(self, parent, *args, **kwargs)
+    def __init__(self, parent):
+        self.parent = parent
+        self.text_status = tk.StringVar()
+        tk.Label.__init__(self, parent, textvariable=self.text_status, relief=tk.SUNKEN, anchor=tk.W)
+        self.text_status.set("Waiting for a File")
+
+    def set_status(self, status):
+        self.text_status.set(str(status))
+
+
 
 
 class Main_Application(tk.Frame):
@@ -106,8 +118,6 @@ class Main_Application(tk.Frame):
         
     def create_widgets(self):
         """Creating the widgets of the application"""
-        # create a Menubar
-        self.menubar = Menubar(self)
         # create a subframe for new buttons
         self.frame_buttons = tk.Frame(self.master, bg="white", borderwidth=1, relief="raised")
         # create buttons
@@ -117,7 +127,9 @@ class Main_Application(tk.Frame):
         # create waveform and spectrgram
         self.add_plots()
         # create a Statusbar
-        self.add_statusbar()
+        self.statusbar = Statusbar(self.master)
+        # create a Menubar
+        self.menubar = Menubar(self, self.statusbar)
 
     def add_buttons(self):
         # windowing
@@ -152,11 +164,6 @@ class Main_Application(tk.Frame):
         self.canvas_wave = WavePlot(self.frame_plot)
         # self.title_spectrograph = tk.Label(self.frame_plot, text="Spektogram fali", font=self.LARGE_FONT)
         self.canvas_spectrum = SpectrumPlot(self.frame_plot)
-
-    def add_statusbar(self):
-        self.text_status = tk.StringVar()
-        self.text_status.set("Waiting for a file")
-        self.statusbar = tk.Label(self.master, textvariable=self.text_status, relief=tk.SUNKEN, anchor=tk.W)
         
     def setup_layout(self):
         """Setup grid system"""
@@ -204,7 +211,9 @@ class Main_Application(tk.Frame):
         try:
             file_name = self.menubar.filename
             if file_name is not None:
-                self.text_status.set("File {} is loaded.".format(file_name))
+                # slice path and filename to the list
+                head_tail = path.split(file_name)
+                self.statusbar.set_status("Loaded File: {}".format(head_tail[1]))
             else:
                 raise NameError
 
