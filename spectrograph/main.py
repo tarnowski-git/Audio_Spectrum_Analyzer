@@ -1,10 +1,11 @@
 import tkinter as tk
 import numpy as np
+import winsound
 from scipy import signal
 from scipy.io import wavfile
-from pygame import mixer
 from PIL import Image, ImageTk
 from os import getcwd, path
+
 from spectrograph.plots import WavePlot, SpectrumPlot
 
 
@@ -81,8 +82,6 @@ class Statusbar(tk.Label):
         self.text_status.set(str(status))
 
 
-
-
 class Main_Application(tk.Frame):
     """Main class of application"""
 
@@ -103,15 +102,12 @@ class Main_Application(tk.Frame):
         self.configure_gui()
         self.create_widgets()
         self.setup_layout()
-        # needs for playing sound
-        mixer.init()
 
     def configure_gui(self):
         """Setting general configurations of the application
         """
         self.master.title("Audio Spectrum Analyzer")
         # +0+0 top left corner on the screen
-        # self.master.geometry("1200x600+0+0")
         self.master.configure(background="white")
         self.master.iconbitmap("icons/logo_uksw.ico")
         self.master.resizable(0, 0)
@@ -135,17 +131,17 @@ class Main_Application(tk.Frame):
         # windowing
         self.var_windowing = tk.StringVar()
         self.var_windowing.set(self.WINDOWING[0])
-        self.label_windowing = tk.Label(self.frame_buttons, text="Okienkowanie", padx=20, pady=10, font=self.SMALL_FONT, bg="white")
+        self.label_windowing = tk.Label(self.frame_buttons, text="Window function", padx=20, pady=10, font=self.SMALL_FONT, bg="white")
         self.options_windowing = tk.OptionMenu(self.frame_buttons, self.var_windowing, *self.WINDOWING)
         # overlap
         self.var_overlap = tk.StringVar()
         self.var_overlap.set(self.OVERLAP[0])
-        self.label_overlap = tk.Label(self.frame_buttons, text="Długość zakładki (%)", padx=20, pady=10, font=self.SMALL_FONT, bg="white")
+        self.label_overlap = tk.Label(self.frame_buttons, text="Overlapping windows(%)", padx=20, pady=10, font=self.SMALL_FONT, bg="white")
         self.options_overlap = tk.OptionMenu(self.frame_buttons, self.var_overlap, *self.OVERLAP)
         # nfft
         self.var_nfft = tk.StringVar()
         self.var_nfft.set(self.NFFT[4])
-        self.label_nfft = tk.Label(self.frame_buttons, text="Długość próbki", padx=20, pady=10, font=self.SMALL_FONT, bg="white")
+        self.label_nfft = tk.Label(self.frame_buttons, text="NFFT length segments", padx=20, pady=10, font=self.SMALL_FONT, bg="white")
         self.options_nfft = tk.OptionMenu(self.frame_buttons, self.var_nfft, *self.NFFT)
         # generate button
         self.button_generate = tk.Button(self.frame_buttons, text="Generate plots", command=self.generate_plots, font=("Arial", "14", "bold"), bg="red", fg="white")
@@ -225,31 +221,24 @@ class Main_Application(tk.Frame):
             # update a waveform
             self.canvas_wave.plotting(xval=times, yval=samples)
 
-            # # create a spectrum
+            # create a spectrum
             self.canvas_spectrum.plotting(xval=samples, nfft=self.var_nfft.get(), fs=sample_rate, 
                                         window=signal.get_window(self.var_windowing.get(), int(self.var_nfft.get())), noverlap=self.var_overlap.get(),duration=times[-1])
             
-        except TypeError as e:
-            print(e)
-            print(samples)
-            print(sample_rate)
-            print(self.var_nfft.get())
-            print(self.var_windowing.get())
-            print(self.var_overlap.get())
         except NameError as E:
-            print(E)
-            tk.messagebox.showerror("File not found", "The file path is wrong. Please try again.")
+            tk.messagebox.showerror("File not found", "File path is wrong. Please try again.")
 
 
     def play_sound(self):
+        """Function working only for Windows"""
         try:
-            mixer.music.load(self.menubar.filename)
-            mixer.music.play()
+            winsound.PlaySound(self.menubar.filename, winsound.SND_ASYNC)
         except NameError:
-            tk.messagebox.showerror("File not found", "Propobly the file path is wrong. Please try again.")
+            tk.messagebox.showerror("File not found", "File path is wrong. Please try again.")
 
     def stop_sound(self):
-        mixer.music.stop()
+        winsound.PlaySound(None, winsound.SND_FILENAME)
+
 
 
 def main():
