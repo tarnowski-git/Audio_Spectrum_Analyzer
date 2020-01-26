@@ -93,10 +93,10 @@ class SpectrumPlot(FigureCanvasTkAgg):
         """Updating a SpectrumPlot Figure instance and drawing plot."""
 
         self.__xval = xval
-        self.__nfft = int(nfft)
-        self.__fs = int(fs)
+        self.__nfft = nfft
+        self.__fs = fs
         self.__window = window
-        self.__noverlap = int(noverlap) / 100
+        self.__noverlap = noverlap
         self.__duration = float(duration)
 
         self.axes.clear()

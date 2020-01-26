@@ -221,9 +221,13 @@ class Main_Application(tk.Frame):
             # update a waveform
             self.canvas_wave.plotting(xval=times, yval=samples)
 
-            # create a spectrum
-            self.canvas_spectrum.plotting(xval=samples, nfft=self.var_nfft.get(), fs=sample_rate, 
-                                        window=signal.get_window(self.var_windowing.get(), int(self.var_nfft.get())), noverlap=self.var_overlap.get(),duration=times[-1])
+            temp_nfft = int(self.var_nfft.get())
+            temp_noverlap = int(self.var_overlap.get()) / 100      # get percentage
+            temp_noverlap = int(self.var_nfft.get()) * temp_noverlap
+            temp_window = signal.get_window(self.var_windowing.get(), int(self.var_nfft.get()))
+            # update a spectrum
+            self.canvas_spectrum.plotting(xval=samples, nfft=temp_nfft, fs=sample_rate, 
+                                        window=temp_window, noverlap=temp_noverlap, duration=times[-1])
             
         except NameError as E:
             tk.messagebox.showerror("File not found", "File path is wrong. Please try again.")
