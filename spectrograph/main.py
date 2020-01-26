@@ -58,7 +58,7 @@ class Menubar(tk.Menu):
         tk.messagebox.showinfo("Audio Spectrum Analyzer", self.INFO)
 
     def about_versions(self):
-        info = ("Python 3.7.2\n")
+        info = ("Python 3.7.5\n")
         tk.messagebox.showinfo("Audio Spectrum Analyzer", info)
 
     @property
