@@ -81,8 +81,8 @@ class Main_Application(tk.Frame):
     IMG_PLAY = "assets/play.png"
     IMG_STOP = "assets/stop.png"
 
-    LARGE_FONT = ("Times", "12", "bold italic")
-    SMALL_FONT = ("Times", "10")
+    LARGE_FONT = ("Arial", "14", "bold italic")
+    SMALL_FONT = ("Arial", "12")
 
 
     def __init__(self, master):
@@ -109,11 +109,11 @@ class Main_Application(tk.Frame):
         # create a Menubar
         self.menubar = Menubar(self)
         # create a subframe for new buttons
-        self.frame_buttons = tk.Frame(self.master)
+        self.frame_buttons = tk.Frame(self.master, bg="white", borderwidth=1, relief="raised")
         # create buttons
         self.add_buttons()
         # create a subframe for plots
-        self.frame_plot = tk.Frame(self.master)
+        self.frame_plot = tk.Frame(self.master, bg="white")
         # create waveform and spectrgram
         self.add_plots()
         # create a Statusbar
@@ -123,26 +123,29 @@ class Main_Application(tk.Frame):
         # windowing
         self.var_windowing = tk.StringVar()
         self.var_windowing.set(self.WINDOWING[0])
-        self.label_windowing = tk.Label(self.frame_buttons, text="Okienkowanie", font=self.SMALL_FONT)
+        self.label_windowing = tk.Label(self.frame_buttons, text="Okienkowanie", padx=20, pady=10, font=self.SMALL_FONT, bg="white")
         self.options_windowing = tk.OptionMenu(self.frame_buttons, self.var_windowing, *self.WINDOWING)
         # overlap
         self.var_overlap = tk.StringVar()
         self.var_overlap.set(self.OVERLAP[0])
-        self.label_overlap = tk.Label(self.frame_buttons, text="Długość zakładki (%)", padx=20, pady=10, font=self.SMALL_FONT)
+        self.label_overlap = tk.Label(self.frame_buttons, text="Długość zakładki (%)", padx=20, pady=10, font=self.SMALL_FONT, bg="white")
         self.options_overlap = tk.OptionMenu(self.frame_buttons, self.var_overlap, *self.OVERLAP)
         # nfft
         self.var_nfft = tk.StringVar()
         self.var_nfft.set(self.NFFT[4])
-        self.label_nfft = tk.Label(self.frame_buttons, text="Długość próbki", padx=20, pady=10, font=self.SMALL_FONT)
+        self.label_nfft = tk.Label(self.frame_buttons, text="Długość próbki", padx=20, pady=10, font=self.SMALL_FONT, bg="white")
         self.options_nfft = tk.OptionMenu(self.frame_buttons, self.var_nfft, *self.NFFT)
         # generate button
-        self.button_generate = tk.Button(self.frame_buttons, text="Generate plots", command=self.generate_plots, font=self.SMALL_FONT)
+        self.button_generate = tk.Button(self.frame_buttons, text="Generate plots", command=self.generate_plots, font=("Arial", "14", "bold"), bg="red", fg="white")
         # play button
         self.image_1 = ImageTk.PhotoImage(Image.open(self.IMG_PLAY))
-        self.button_play = tk.Button(self.frame_buttons, command=self.play_sound, image=self.image_1)
+        self.button_play = tk.Button(self.frame_buttons, command=self.play_sound, image=self.image_1, bg="white")
         # stop button
         self.image_2 = ImageTk.PhotoImage(Image.open(self.IMG_STOP))
-        self.button_stop = tk.Button(self.frame_buttons, command=self.stop_sound, image=self.image_2)
+        self.button_stop = tk.Button(self.frame_buttons, command=self.stop_sound, image=self.image_2, bg="white")
+        # empty buttons - for make a space
+        self.space_button_1 = tk.Button(self.frame_buttons, state=tk.DISABLED, relief=tk.FLAT, bg="white")
+        self.space_button_2 = tk.Button(self.frame_buttons, state=tk.DISABLED, relief=tk.FLAT, bg="white")
 
     def add_plots(self):
         self.title_waveform = tk.Label(self.frame_plot, text="Wykres fali", font=self.LARGE_FONT)
@@ -159,25 +162,28 @@ class Main_Application(tk.Frame):
         """Setup grid system"""
         # set a visibility of menubar in UI
         self.master.config(menu=self.menubar)
-        self.master.columnconfigure(2, weight=100)
         # subframs for relative griding
-        self.frame_buttons.grid(row=0, sticky=tk.W+tk.E, pady=10)
-        self.frame_plot.grid(row=1, sticky=tk.W+tk.E)
+        self.frame_buttons.grid(row=0, sticky=tk.W+tk.E, pady=0)
+        self.frame_plot.grid(row=1, sticky=tk.W+tk.E, pady=10)
         # windowing
-        self.label_windowing.grid(row=0, column=0, padx=20)
-        self.options_windowing.grid(row=1, column=0, padx=0)
+        self.label_windowing.grid(row=0, column=0, padx=30)
+        self.options_windowing.grid(row=1, column=0, padx=0, pady=10)
         # overlap
-        self.label_overlap.grid(row=0, column=1)
-        self.options_overlap.grid(row=1, column=1, padx= 20)
+        self.label_overlap.grid(row=0, column=1, padx=30, pady=0)
+        self.options_overlap.grid(row=1, column=1, padx=30, pady=0)
         # nfft
-        self.label_nfft.grid(row=0, column=2)
-        self.options_nfft.grid(row=1, column=2, padx= 20)
+        self.label_nfft.grid(row=0, column=2, padx=30, pady=0)
+        self.options_nfft.grid(row=1, column=2, padx=30, pady=0)
+        # create a space
+        self.space_button_1.grid(row=0, column=3, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=30, pady=10)
         # generate button
-        self.button_generate.grid(row=0, column=3, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=30, pady=5)
+        self.button_generate.grid(row=0, column=5, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=10, pady=10)
+        # create a space
+        self.space_button_2.grid(row=0, column=7, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=30, pady=10)
         # play button
-        self.button_play.grid(row=0, column=10, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=10, pady=5)
+        self.button_play.grid(row=0, column=9, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=10, pady=10)
         # stop button
-        self.button_stop.grid(row=0, column=12, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=10, pady=5)
+        self.button_stop.grid(row=0, column=11, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=20, pady=10)
         # wavefotm
         self.title_waveform.grid(row=0, column=0, columnspan=30)
         self.canvas_wave.get_tk_widget().grid(row=1, column=0, columnspan=30)
