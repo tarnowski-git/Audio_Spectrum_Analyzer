@@ -148,9 +148,9 @@ class Main_Application(tk.Frame):
         self.space_button_2 = tk.Button(self.frame_buttons, state=tk.DISABLED, relief=tk.FLAT, bg="white")
 
     def add_plots(self):
-        self.title_waveform = tk.Label(self.frame_plot, text="Wykres fali", font=self.LARGE_FONT)
+        # self.title_waveform = tk.Label(self.frame_plot, text="Wykres fali", font=self.LARGE_FONT)
         self.canvas_wave = WavePlot(self.frame_plot)
-        self.title_spectrograph = tk.Label(self.frame_plot, text="Spektogram fali", font=self.LARGE_FONT)
+        # self.title_spectrograph = tk.Label(self.frame_plot, text="Spektogram fali", font=self.LARGE_FONT)
         self.canvas_spectrum = SpectrumPlot(self.frame_plot)
 
     def add_statusbar(self):
@@ -185,11 +185,9 @@ class Main_Application(tk.Frame):
         # stop button
         self.button_stop.grid(row=0, column=11, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=20, pady=10)
         # wavefotm
-        self.title_waveform.grid(row=0, column=0, columnspan=30)
-        self.canvas_wave.get_tk_widget().grid(row=1, column=0, columnspan=30)
+        self.canvas_wave.get_tk_widget().grid(row=0, column=0, columnspan=30)
         # spectograph
-        self.title_spectrograph.grid(row=2, column=0)
-        self.canvas_spectrum.get_tk_widget().grid(row=3, column=0)
+        self.canvas_spectrum.get_tk_widget().grid(row=1, column=0)
         # Statusbar
         self.statusbar.grid(row=2, sticky=tk.W+tk.E)
 

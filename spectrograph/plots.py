@@ -25,6 +25,8 @@ class WavePlot(FigureCanvasTkAgg):
         super().__init__(figure, master=parent)
         self.axes = figure.add_subplot(111)
         self.axes.grid(True)
+        self.axes.set_ylabel("Amplitude")
+        self.axes.set_title("Time waveform(sec)")
         self.axes.axhline()                         # line y=0
         self.axes.set_xlim(left=0)
         self.axes.plot(self.__xval, self.__yval)
@@ -36,8 +38,8 @@ class WavePlot(FigureCanvasTkAgg):
         self.__yval = yval
         self.axes.clear()
         self.axes.grid(True)
-        self.axes.axhline()
-        self.axes.set_xlim(left=0)
+        self.axes.set_ylabel("Frequency(Hz)")
+        self.axes.set_title("Time-frequency spectrum(sec)")
         self.axes.plot(self.__xval, self.__yval)
         self.draw()
 
@@ -80,6 +82,8 @@ class SpectrumPlot(FigureCanvasTkAgg):
         super().__init__(figure, master=parent)
         self.axes = figure.add_subplot(111)
         self.axes.grid(True)
+        self.axes.set_ylabel("Frequency(Hz)")
+        self.axes.set_title("Time-frequency spectrum(sec)")
         self.axes.specgram(self.__xval, NFFT=self.__nfft,
                            Fs=self.__fs, noverlap=self.__noverlap, xextent=(0, self.__duration))
         self.draw()
@@ -96,6 +100,8 @@ class SpectrumPlot(FigureCanvasTkAgg):
 
         self.axes.clear()
         self.axes.grid(True)
+        self.axes.set_ylabel("Frequency(Hz)")
+        self.axes.set_title("Time-frequency spectrum(sec)")
         self.axes.specgram(self.__xval, NFFT=self.__nfft, Fs=self.__fs,
                            window=self.__window, noverlap=self.__noverlap, xextent=(0, self.__duration))
         self.draw()
