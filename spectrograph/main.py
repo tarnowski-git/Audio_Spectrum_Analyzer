@@ -99,9 +99,10 @@ class Main_Application(tk.Frame):
         """
         self.master.title("Audio Spectrum Analyzer")
         # +0+0 top left corner on the screen
-        self.master.geometry("1200x600+0+0")
+        # self.master.geometry("1200x600+0+0")
         self.master.configure(background="white")
         self.master.iconbitmap("icons/logo_uksw.ico")
+        self.master.resizable(0, 0)
         
     def create_widgets(self):
         """Creating the widgets of the application"""
@@ -152,15 +153,16 @@ class Main_Application(tk.Frame):
     def add_statusbar(self):
         self.text_status = tk.StringVar()
         self.text_status.set("Waiting for a file")
-        self.statusbar = tk.Label(self, textvariable=self.text_status, relief=tk.SUNKEN, anchor=tk.W)
+        self.statusbar = tk.Label(self.master, textvariable=self.text_status, relief=tk.SUNKEN, anchor=tk.W)
         
     def setup_layout(self):
         """Setup grid system"""
         # set a visibility of menubar in UI
         self.master.config(menu=self.menubar)
+        self.master.columnconfigure(2, weight=100)
         # subframs for relative griding
-        self.frame_buttons.pack(fill=tk.X)
-        self.frame_plot.pack(fill=tk.X)
+        self.frame_buttons.grid(row=0, sticky=tk.W+tk.E, pady=10)
+        self.frame_plot.grid(row=1, sticky=tk.W+tk.E)
         # windowing
         self.label_windowing.grid(row=0, column=0, padx=20)
         self.options_windowing.grid(row=1, column=0, padx=0)
@@ -173,17 +175,17 @@ class Main_Application(tk.Frame):
         # generate button
         self.button_generate.grid(row=0, column=3, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=30, pady=5)
         # play button
-        self.button_play.grid(row=0, column=8, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=10, pady=5)
+        self.button_play.grid(row=0, column=10, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=10, pady=5)
         # stop button
-        self.button_stop.grid(row=0, column=10, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=10, pady=5)
+        self.button_stop.grid(row=0, column=12, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=10, pady=5)
         # wavefotm
-        self.title_waveform.pack()
-        self.canvas_wave.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=tk.TRUE)
+        self.title_waveform.grid(row=0, column=0, columnspan=30)
+        self.canvas_wave.get_tk_widget().grid(row=1, column=0, columnspan=30)
         # spectograph
-        self.title_spectrograph.pack()
-        self.canvas_spectrum.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=tk.TRUE)
+        self.title_spectrograph.grid(row=2, column=0)
+        self.canvas_spectrum.get_tk_widget().grid(row=3, column=0)
         # Statusbar
-        self.statusbar.pack(side="bottom", fill="x")
+        self.statusbar.grid(row=2, sticky=tk.W+tk.E)
 
     def generate_plots(self):
         """Load a file and generate plots.
@@ -212,7 +214,7 @@ class Main_Application(tk.Frame):
 
             # # create a spectrum
             self.canvas_spectrum.plotting(xval=samples, nfft=self.var_nfft.get(), fs=sample_rate, 
-                                        window=signal.get_window(self.var_windowing.get(), int(self.var_nfft.get())), noverlap=self.var_overlap.get(),duration=times)
+                                        window=signal.get_window(self.var_windowing.get(), int(self.var_nfft.get())), noverlap=self.var_overlap.get(),duration=len(times))
             
         except TypeError as e:
             print(e)
@@ -223,7 +225,7 @@ class Main_Application(tk.Frame):
             print(self.var_overlap.get())
         except NameError as E:
             print(E)
-            tk.messagebox.showerror("File not found", "Propobly the file path is wrong. Please try again.")
+            tk.messagebox.showerror("File not found", "The file path is wrong. Please try again.")
 
 
     def play_sound(self):

@@ -21,7 +21,7 @@ class WavePlot(FigureCanvasTkAgg):
     def __init__(self, parent=None, xval=np.zeros(1000), yval=[0] * 1000):
         self.__xval = xval
         self.__yval = yval
-        figure = Figure(figsize=(4, 2), dpi=100)    # figsize - in inch
+        figure = Figure(figsize=(12, 2.5), dpi=100)    # figsize - in inch
         super().__init__(figure, master=parent)
         self.axes = figure.add_subplot(111)
         self.axes.grid(True)
@@ -76,7 +76,7 @@ class SpectrumPlot(FigureCanvasTkAgg):
         self.__duration = duration
 
         # create a figure
-        figure = Figure(figsize=(4, 2), dpi=100)    # figsize - in inch
+        figure = Figure(figsize=(12, 2.5), dpi=100)    # figsize - in inch
         super().__init__(figure, master=parent)
         self.axes = figure.add_subplot(111)
         self.axes.grid(True)
