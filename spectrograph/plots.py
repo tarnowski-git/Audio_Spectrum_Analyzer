@@ -38,8 +38,9 @@ class WavePlot(FigureCanvasTkAgg):
         self.__yval = yval
         self.axes.clear()
         self.axes.grid(True)
-        self.axes.set_ylabel("Frequency(Hz)")
-        self.axes.set_title("Time-frequency spectrum(sec)")
+        self.axes.set_ylabel("Amplitude")
+        self.axes.set_title("Time waveform(sec)")
+        self.axes.set_xlim(left=0, right=self.__xval[-1])
         self.axes.plot(self.__xval, self.__yval)
         self.draw()
 

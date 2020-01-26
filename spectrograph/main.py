@@ -218,7 +218,7 @@ class Main_Application(tk.Frame):
 
             # # create a spectrum
             self.canvas_spectrum.plotting(xval=samples, nfft=self.var_nfft.get(), fs=sample_rate, 
-                                        window=signal.get_window(self.var_windowing.get(), int(self.var_nfft.get())), noverlap=self.var_overlap.get(),duration=len(times))
+                                        window=signal.get_window(self.var_windowing.get(), int(self.var_nfft.get())), noverlap=self.var_overlap.get(),duration=times[-1])
             
         except TypeError as e:
             print(e)
