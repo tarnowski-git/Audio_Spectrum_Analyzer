@@ -4,7 +4,6 @@ from scipy import signal
 from scipy.io import wavfile
 from pygame import mixer
 from PIL import Image, ImageTk
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from spectrograph.plots import WavePlot, SpectrumPlot
 
@@ -13,25 +12,32 @@ from spectrograph.plots import WavePlot, SpectrumPlot
 class Menubar(tk.Menu):
     """Create a functional menubar in application."""
 
+    INFO = (
+        "Digital Processing of Signal\n"
+        "Cardinal Stefan Wyszynski University in Warsaw\n"
+        "Author: Konrad Tarnowski © 2020"
+    )
+
     def __init__(self, parent):
-        # Create a menubar object
+        # create a menubar object
         super().__init__(parent)
         self.parent = parent
+        self.__filename = None
+
         # Build a file options
         fileMenu = tk.Menu(self, tearoff=False)
         self.add_cascade(label="File",underline=0, menu=fileMenu)
         fileMenu.add_command(label="Open", command=self.choose_file)
         fileMenu.add_command(label="Exit", command=self.exit)
+
         # Build a help options
         helpMenu = tk.Menu(self, tearoff=False)
         self.add_cascade(label="Help",underline=0, menu=helpMenu)
         helpMenu.add_command(label="About", command=self.about)
         helpMenu.add_command(label="Version", command=self.about_versions)
-        self.__filename = None
-
+        
     def choose_file(self):
-        """Only choosing wave files by user and saving its path to `filename`.
-        It is not loading the file into program.
+        """Choosing only wave files and saving its path to `filename`.
         """
         # filter to only one type files
         ftypes = [("wave files","*.wav")]
@@ -43,15 +49,12 @@ class Menubar(tk.Menu):
         self.parent.destroy()   # this is necessary on Windows to prevent
                                 # Fatal Python Error: PyEval_RestoreThread: NULL tstate
 
-    def about(self):
-        info = ("Cyfrowe Przetwarzani Sygnałów.\n"
-                "Uniwerystet Kardynała Stefana Wyszyńskiego w Warszawie 2019\n"
-                "Autor: Konrad Tarnowski")
-        tk.messagebox.showinfo("System analizy dźwięków z sonogramem", info)
+    def about(self):                
+        tk.messagebox.showinfo("Audio Spectrum Analyzer", self.INFO)
 
     def about_versions(self):
         info = ("Python 3.7.2\n")
-        tk.messagebox.showinfo("System analizy dźwięków z sonogramem", info)
+        tk.messagebox.showinfo("Audio Spectrum Analyzer", info)
 
     @property
     def filename(self):
@@ -68,8 +71,7 @@ class Statusbar(tk.Label):
         tk.Label.__init__(self, parent, *args, **kwargs)
 
 
-
-class Main_Application(tk.Tk):
+class Main_Application(tk.Frame):
     """Main class of application"""
 
     WINDOWING = ["hamming", "triang", "blackman", "hann", "bartlett", "flattop", "bohman", "barthann"]
@@ -82,92 +84,107 @@ class Main_Application(tk.Tk):
     LARGE_FONT = ("Times", "12", "bold italic")
     SMALL_FONT = ("Times", "10")
 
-    def __init__(self):
-        super().__init__()
+
+    def __init__(self, master):
+        super().__init__(master)
+        self.master = master
         self.configure_gui()
         self.create_widgets()
-        mixer.init()            # needs for playing sound
+        self.setup_layout()
+        # needs for playing sound
+        mixer.init()
 
     def configure_gui(self):
-        """Setting general configurations of the application"""
-        self.title("Spectrum analyzer")
-        self.geometry("1200x600")
-        self.configure(background="white")
-        self.iconbitmap("icons/logo_uksw.ico")
+        """Setting general configurations of the application
+        """
+        self.master.title("Audio Spectrum Analyzer")
+        # +0+0 top left corner on the screen
+        self.master.geometry("1200x600+0+0")
+        self.master.configure(background="white")
+        self.master.iconbitmap("icons/logo_uksw.ico")
         
     def create_widgets(self):
         """Creating the widgets of the application"""
-        self.add_statusbar()
-        self.add_menubar()
-        self.add_buttons()
-        self.add_plots()
-
-    def add_menubar(self):
+        # create a Menubar
         self.menubar = Menubar(self)
-        self.config(menu=self.menubar)   # set a visibility of menubar in UI
+        # create a subframe for new buttons
+        self.frame_buttons = tk.Frame(self.master)
+        # create buttons
+        self.add_buttons()
+        # create a subframe for plots
+        self.frame_plot = tk.Frame(self.master)
+        # create waveform and spectrgram
+        self.add_plots()
+        # create a Statusbar
+        self.add_statusbar()
+
+    def add_buttons(self):
+        # windowing
+        self.var_windowing = tk.StringVar()
+        self.var_windowing.set(self.WINDOWING[0])
+        self.label_windowing = tk.Label(self.frame_buttons, text="Okienkowanie", font=self.SMALL_FONT)
+        self.options_windowing = tk.OptionMenu(self.frame_buttons, self.var_windowing, *self.WINDOWING)
+        # overlap
+        self.var_overlap = tk.StringVar()
+        self.var_overlap.set(self.OVERLAP[0])
+        self.label_overlap = tk.Label(self.frame_buttons, text="Długość zakładki (%)", padx=20, pady=10, font=self.SMALL_FONT)
+        self.options_overlap = tk.OptionMenu(self.frame_buttons, self.var_overlap, *self.OVERLAP)
+        # nfft
+        self.var_nfft = tk.StringVar()
+        self.var_nfft.set(self.NFFT[4])
+        self.label_nfft = tk.Label(self.frame_buttons, text="Długość próbki", padx=20, pady=10, font=self.SMALL_FONT)
+        self.options_nfft = tk.OptionMenu(self.frame_buttons, self.var_nfft, *self.NFFT)
+        # generate button
+        self.button_generate = tk.Button(self.frame_buttons, text="Generate plots", command=self.generate_plots, font=self.SMALL_FONT)
+        # play button
+        self.image_1 = ImageTk.PhotoImage(Image.open(self.IMG_PLAY))
+        self.button_play = tk.Button(self.frame_buttons, command=self.play_sound, image=self.image_1)
+        # stop button
+        self.image_2 = ImageTk.PhotoImage(Image.open(self.IMG_STOP))
+        self.button_stop = tk.Button(self.frame_buttons, command=self.stop_sound, image=self.image_2)
 
     def add_plots(self):
-        # create a subframe and choose the instatnce
-        self.frame_plot = tk.Frame(self, relief=tk.RAISED, borderwidth=3)
-        self.frame_plot.pack(fill=tk.X)
-
-        title_label = tk.Label(self.frame_plot, text="Wykres fali", font=self.LARGE_FONT)
-        title_label.pack()
-
+        self.title_waveform = tk.Label(self.frame_plot, text="Wykres fali", font=self.LARGE_FONT)
         self.canvas_wave = WavePlot(self.frame_plot)
-        self.canvas_wave.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=tk.TRUE)
-
-        title_label = tk.Label(self.frame_plot, text="Spektogram fali", font=self.LARGE_FONT)
-        title_label.pack()
-
+        self.title_spectrograph = tk.Label(self.frame_plot, text="Spektogram fali", font=self.LARGE_FONT)
         self.canvas_spectrum = SpectrumPlot(self.frame_plot)
-        self.canvas_spectrum.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=tk.TRUE)
 
     def add_statusbar(self):
         self.text_status = tk.StringVar()
         self.text_status.set("Waiting for a file")
         self.statusbar = tk.Label(self, textvariable=self.text_status, relief=tk.SUNKEN, anchor=tk.W)
-        self.statusbar.pack(side="bottom", fill="x")
-
-    def add_buttons(self):
-        # create a subframe for new buttons
-        frame_buttons = tk.Frame(self, relief=tk.RAISED)
-        # create describes as labels
-        label_windowing = tk.Label(frame_buttons, text="Okienkowanie", font=self.SMALL_FONT)
-        label_overlap = tk.Label(frame_buttons, text="Długość zakładki (%)", padx=20, pady=10, font=self.SMALL_FONT)
-        label_nfft = tk.Label(frame_buttons, text="Długość próbki", padx=20, pady=10, font=self.SMALL_FONT)
-        # define varieble string objects
-        self.var_windowing = tk.StringVar()
-        self.var_overlap = tk.StringVar()
-        self.var_nfft = tk.StringVar()
-        # set default values
-        self.var_windowing.set(self.WINDOWING[0])
-        self.var_overlap.set(self.OVERLAP[0])
-        self.var_nfft.set(self.NFFT[4])
-        # create option menues
-        options_windowing = tk.OptionMenu(frame_buttons, self.var_windowing, *self.WINDOWING)
-        options_overlap = tk.OptionMenu(frame_buttons, self.var_overlap, *self.OVERLAP)
-        options_nfft = tk.OptionMenu(frame_buttons, self.var_nfft, *self.NFFT)
         
-        button_generate = tk.Button(frame_buttons, text="Generate plots", command=self.generate_plots, font=self.SMALL_FONT)
-        self.image_1 = ImageTk.PhotoImage(Image.open(self.IMG_PLAY))
-        button_play = tk.Button(frame_buttons, command=self.play_sound, image=self.image_1)
-        self.image_2 = ImageTk.PhotoImage(Image.open(self.IMG_STOP))
-        button_stop = tk.Button(frame_buttons, command=self.stop_sound, image=self.image_2)
 
-        # placing wigets on the screen
-        label_windowing.grid(row=0, column=0, padx=20)
-        label_overlap.grid(row=0, column=1)
-        label_nfft.grid(row=0, column=2)
-
-        button_generate.grid(row=0, column=3, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=30, pady=5)
-        button_play.grid(row=0, column=8, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=10, pady=5)
-        button_stop.grid(row=0, column=10, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=10, pady=5)
-
-        options_windowing.grid(row=1, column=0, padx=0)
-        options_overlap.grid(row=1, column=1, padx= 20)
-        options_nfft.grid(row=1, column=2, padx= 20)
-        frame_buttons.pack(fill=tk.X)
+    def setup_layout(self):
+        """Setup grid system"""
+        # set a visibility of menubar in UI
+        self.master.config(menu=self.menubar)
+        # subframs for relative griding
+        self.frame_buttons.pack(fill=tk.X)
+        self.frame_plot.pack(fill=tk.X)
+        # windowing
+        self.label_windowing.grid(row=0, column=0, padx=20)
+        self.options_windowing.grid(row=1, column=0, padx=0)
+        # overlap
+        self.label_overlap.grid(row=0, column=1)
+        self.options_overlap.grid(row=1, column=1, padx= 20)
+        # nfft
+        self.label_nfft.grid(row=0, column=2)
+        self.options_nfft.grid(row=1, column=2, padx= 20)
+        # generate button
+        self.button_generate.grid(row=0, column=3, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=30, pady=5)
+        # play button
+        self.button_play.grid(row=0, column=8, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=10, pady=5)
+        # stop button
+        self.button_stop.grid(row=0, column=10, columnspan=2, rowspan=2, sticky=tk.W+tk.E+tk.N+tk.S, padx=10, pady=5)
+        # wavefotm
+        self.title_waveform.pack()
+        self.canvas_wave.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=tk.TRUE)
+        # spectograph
+        self.title_spectrograph.pack()
+        self.canvas_spectrum.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=tk.TRUE)
+        # Statusbar
+        self.statusbar.pack(side="bottom", fill="x")
 
     def generate_plots(self):
         """Load a file and generate plots.
@@ -221,6 +238,6 @@ class Main_Application(tk.Tk):
 
 
 def main():
-    """run mianloop"""
-    root = Main_Application()
-    root.mainloop()
+    root = tk.Tk()
+    application = Main_Application(master=root)
+    application.mainloop()
