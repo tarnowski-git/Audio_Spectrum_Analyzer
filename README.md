@@ -1,24 +1,56 @@
-# Spectrogram
-> GUI applications to show audio waveform and spectrgram, which is visual representation of sound - it display the amplitude of the frequency components of the signal over time.
+# Audio Spectrum Analyzer
+
+Desktop GUI applications with Python to show audio waveform and spectrgram, which is visual representation of sound - the amplitude of the frequency components of the signal over time.
+
+Displays the waveform with matplotlib...
+
+## Demo
+
+![spectograph](https://user-images.githubusercontent.com/34337622/73137360-6fc90980-4057-11ea-932e-db6941c66e16.gif)
 
 ## Technologies
-* Python 3.7
 
-## Setup
-git clone ...
+-   Python 3.7
+-   Tkinter graphic module
+-   NumPy module
+-   SciPy module
+-   Pillow module
+-   Matplotlib module
 
-Install requests, a common module to handle HTTP requests, you’d simply use the following command from the root directory of your project:
-```pip install -r requirements.txt```
-pip will then take care of the rest and install the package.
+## Prerequisites
 
-### Usage
-```$ python spectrum_analyzer.py```
+-   [Python](https://www.python.org/downloads/)
+-   [pip](https://pip.pypa.io/en/stable/installing/)
+-   [pipenv](https://pipenv.readthedocs.io/en/latest/install/#make-sure-you-ve-got-python-pip)
 
-## Features
-List of features ready and TODOs for future development
-* Displays the waveform with matplotlib
-* Spectrum viewer using scipy.fftpack to compute the FFT
+## Installation
 
-## [License](https://github.com/tarnowski-git/Audio_spectrum_analyzer/blob/master/LICENSE.md)
+-   [Clone](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) this repo to your local machine using:
+
+```
+$ git clone https://github.com/tarnowski-git/Audio_Spectrum_Analyzer.git
+```
+
+-   Setup your [local environment](https://thoughtbot.com/blog/how-to-manage-your-python-projects-with-pipenv):
+
+```
+# Spawn a shell with the virtualenv activated
+$ pipenv shell
+
+# Install dependencies
+$ pipenv install
+
+# Run script into local environment
+$ pipenv run python spectrum_analyzer.py
+```
+
+-   Compile with Pyinstaller to exectutable file:
+
+```
+# Windows
+pyinstaller --onefile --windowed spectrum_analyzer.py
+```
+
+## [License](https://github.com/tarnowski-git/Audio_Spectrum_Analyzer/blob/master/LICENSE.md)
 
 MIT © [Konrad Tarnowski](https://github.com/tarnowski-git)
