@@ -42,17 +42,6 @@ class WavePlot(FigureCanvasTkAgg):
         self.draw()
 
 
-class SetterProperty(object):
-    """A setter descriptor as decorator"""
-
-    def __init__(self, func, doc=None):
-        self.func = func
-        self.__doc__ = doc if doc is not None else func.__doc__
-
-    def __set__(self, obj, value):
-        return self.func(obj, value)
-
-
 class SpectrumPlot(FigureCanvasTkAgg):
     """Compute and plot a spectrogram of data in `xval`.
     Data are split into NFFT length segments and 
@@ -76,14 +65,15 @@ class SpectrumPlot(FigureCanvasTkAgg):
         The number of points of overlap between blocks.
     """
 
-    def __init__(self, parent=None, xval=np.zeros(1000), nfft=256, fs=2, noverlap=900):
+    def __init__(self, parent=None, xval=np.zeros(1000), nfft=256, fs=2, noverlap=900, duration=1):
 
         # init variables
         self.__xval = xval
-        self.__nfft = 256
-        self.__fs = 2
-        # self.__window = np.hamming(self.__nfft)
+        self.__nfft = nfft
+        self.__fs = fs
+        self.__window = np.hamming(self.__nfft)
         self.__noverlap = 128
+        self.__duration = duration
 
         # create a figure
         figure = Figure(figsize=(4, 2), dpi=100)    # figsize - in inch
@@ -91,10 +81,10 @@ class SpectrumPlot(FigureCanvasTkAgg):
         self.axes = figure.add_subplot(111)
         self.axes.grid(True)
         self.axes.specgram(self.__xval, NFFT=self.__nfft,
-                           Fs=self.__fs, noverlap=self.__noverlap)
+                           Fs=self.__fs, noverlap=self.__noverlap, xextent=(0, self.__duration))
         self.draw()
 
-    def plotting(self, xval, nfft, fs, window, noverlap, time):
+    def plotting(self, xval, nfft, fs, window, noverlap, duration):
         """Updating a SpectrumPlot Figure instance and drawing plot."""
 
         self.__xval = xval
@@ -102,30 +92,10 @@ class SpectrumPlot(FigureCanvasTkAgg):
         self.__fs = int(fs)
         self.__window = window
         self.__noverlap = int(noverlap) / 100
-        self.__time = len(time)
+        self.__duration = float(duration)
 
         self.axes.clear()
         self.axes.grid(True)
         self.axes.specgram(self.__xval, NFFT=self.__nfft, Fs=self.__fs,
-                           window=self.__window, noverlap=self.__noverlap, xextent=(0, 1))
+                           window=self.__window, noverlap=self.__noverlap, xextent=(0, self.__duration))
         self.draw()
-
-    @SetterProperty
-    def xval(self, val):
-        self.__xval = int(val)
-
-    @SetterProperty
-    def nfft(self, val):
-        self.__nfft = int(val)
-
-    @SetterProperty
-    def fs(self, val):
-        self.__fs = int(val)
-
-    @SetterProperty
-    def window(self, val1, val2):
-        self.__window = signal.get_window(str(val1), int(val2))
-
-    @SetterProperty
-    def noverlap(self, val):
-        self.__noverlap = int(val) / 100

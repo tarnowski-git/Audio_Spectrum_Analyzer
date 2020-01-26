@@ -154,7 +154,6 @@ class Main_Application(tk.Frame):
         self.text_status.set("Waiting for a file")
         self.statusbar = tk.Label(self, textvariable=self.text_status, relief=tk.SUNKEN, anchor=tk.W)
         
-
     def setup_layout(self):
         """Setup grid system"""
         # set a visibility of menubar in UI
@@ -192,8 +191,9 @@ class Main_Application(tk.Frame):
         `sample_rate` : int
             samples/sec (fs)
         `samples` : numpy array
-
+            pass
         `times` : ndarray - sec
+            pass
         """
         try:
             file_name = self.menubar.filename
@@ -212,7 +212,7 @@ class Main_Application(tk.Frame):
 
             # # create a spectrum
             self.canvas_spectrum.plotting(xval=samples, nfft=self.var_nfft.get(), fs=sample_rate, 
-                                        window=signal.get_window(self.var_windowing.get(), int(self.var_nfft.get())), noverlap=self.var_overlap.get(),time=times)
+                                        window=signal.get_window(self.var_windowing.get(), int(self.var_nfft.get())), noverlap=self.var_overlap.get(),duration=times)
             
         except TypeError as e:
             print(e)
