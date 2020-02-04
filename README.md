@@ -1,8 +1,8 @@
 # Audio Spectrum Analyzer
 
-Desktop GUI applications with Python to show audio waveform and spectrgram, which is visual representation of sound - the amplitude of the frequency components of the signal over time.
+Desktop GUI applications to show audio waveform and spectrogram which is visual representation of sound using the amplitude of the frequency components of the signal over time, using Python 3.7 with Tkinter graphic module.
 
-Displays the waveform with matplotlib...
+Spectrograms are calculated from the time signal using a Fourier transform. The digital signal is divided into pieces corresponding to the analysis window. Calculations of the size of the frequency spectrum are made for each fragment. Each piece corresponds to a vertical image line, giving a picture of the measurement of energy and frequency amplitude for a specific time period. The spectra are then combined to create the image.
 
 ## Demo
 
