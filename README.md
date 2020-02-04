@@ -51,6 +51,6 @@ $ pipenv run python spectrum_analyzer.py
 pyinstaller --onefile --windowed spectrum_analyzer.py
 ```
 
-## [License](https://github.com/tarnowski-git/Audio_Spectrum_Analyzer/blob/master/LICENSE.md)
+## [License](https://github.com/tarnowski-git/Audio_Spectrum_Analyzer/blob/master/LICENSE)
 
 MIT © [Konrad Tarnowski](https://github.com/tarnowski-git)

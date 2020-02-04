@@ -14,9 +14,11 @@ class Menubar(tk.Menu):
     """Create a functional menubar in application."""
 
     INFO = (
+        "Spectrogram Application Project for:\n"
         "Digital Processing of Signal\n"
-        "Cardinal Stefan Wyszynski University in Warsaw\n"
-        "Author: Konrad Tarnowski © 2020"
+        "Cardinal Stefan Wyszynski University in Warsaw\n\n"
+        "Author: Konrad Tarnowski\n"
+        "MIT License © 2020"
     )
 
     def __init__(self, parent, statusbar):
@@ -195,15 +197,7 @@ class Main_Application(tk.Frame):
         self.statusbar.grid(row=2, sticky=tk.W+tk.E)
 
     def generate_plots(self):
-        """Load a file and generate plots.
-
-        `sample_rate` : int
-            samples/sec (fs)
-        `samples` : numpy array
-            pass
-        `times` : ndarray - sec
-            pass
-        """
+        """Load a file and generate plots."""
         try:
             file_name = self.menubar.filename
             if file_name is not None:
@@ -212,10 +206,12 @@ class Main_Application(tk.Frame):
                 self.statusbar.set_status("Loaded File: {}".format(head_tail[1]))
             else:
                 raise NameError
-
+            
+            # sample_rate : samples/sec (fs) | samples : numpy array
             sample_rate, samples = wavfile.read(file_name)
             samples = samples[:,0]      # if two channels, then select only one channel
             signal_duration = len(samples)
+            # setup timeline | ndarray
             times = np.linspace(0, signal_duration / sample_rate, num=signal_duration)
 
             # update a waveform
